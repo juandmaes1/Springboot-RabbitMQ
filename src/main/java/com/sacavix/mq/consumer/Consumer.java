@@ -4,7 +4,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import com.sacavix.mq.dummy.Data;
+import com.sacavix.mq.dummy.Pedido;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -12,21 +12,19 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class Consumer {
 
-	@RabbitListener(queues = { "${sacavix.queue.name}" })
-	public void receive(@Payload Data message) {
+    @RabbitListener(queues = { "${sacavix.queue.name}" })
+    public void receive(@Payload Pedido pedido) {
+        log.info("Pedido recibido: {}", pedido);
 
-		log.info("Received message {}", message);
+        // Simular procesamiento lento
+        procesarPedidoLentamente();
+    }
 
-		makeSlow();
-
-	}
-
-	private void makeSlow() {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+    private void procesarPedidoLentamente() {
+        try {
+            Thread.sleep(5000);  // Simular retraso de procesamiento
+        } catch (InterruptedException e) {
+            log.error("Error durante el procesamiento", e);
+        }
+    }
 }

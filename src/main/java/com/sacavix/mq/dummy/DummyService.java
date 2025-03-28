@@ -11,13 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class DummyService {
 
-	@Autowired
-	private Publisher publisher;
-	
-	public void sendToRabbit(String message) {	
-		Data d = new Data(12, message);
-		log.info("Message '{}' will be send ... ", d);
-		this.publisher.send(d);
-	}
-	
+    @Autowired
+    private Publisher publisher;
+
+    public void sendToRabbit(Pedido pedido) {
+        log.info("El pedido '{}' será enviado...", pedido);
+        this.publisher.send(pedido);
+    }
 }
