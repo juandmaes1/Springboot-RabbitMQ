@@ -6,12 +6,11 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("test")
+@RequestMapping("/test")
 public class DummyController {
 
     @Autowired
@@ -19,17 +18,27 @@ public class DummyController {
 
     private final List<String> productos = List.of("Laptop", "Smartphone", "Tablet", "Monitor", "Teclado", "Mouse", "Auriculares");
 
-    @GetMapping
-    public void testSendPedido() {
-        // Crear un pedido aleatorio
+    @PostMapping
+    public ResponseEntity<String> enviarPedidoDesdeFormulario(@RequestBody Pedido pedido) {
         UUID id = UUID.randomUUID();
-        String producto = productos.get(ThreadLocalRandom.current().nextInt(productos.size()));
-        int cantidad = ThreadLocalRandom.current().nextInt(1, 5);  // Cantidad entre 1 y 5
-        double precioTotal = cantidad * (100 + ThreadLocalRandom.current().nextDouble(500));  // Precio aleatorio entre 100 y 600 por unidad
         LocalDate fecha = LocalDate.now();
+        double precioUnitario = 100 + Math.random() * 500;
+        double precioTotal = precioUnitario * pedido.getCantidad();
 
-        Pedido pedido = new Pedido(id, producto, cantidad, precioTotal, fecha);
+        Pedido pedidoCompleto = new Pedido(id, pedido.getProducto(), pedido.getCantidad(), precioTotal, fecha);
 
-        dummyService.sendToRabbit(pedido);
+        try {
+            dummyService.sendToRabbit(pedidoCompleto);
+            return ResponseEntity.ok(pedidoCompleto.getProducto() + " x" + pedidoCompleto.getCantidad());
+        } catch (Exception e) {
+            String error = e.getMessage();
+            if (error != null && error.contains("CallNotPermittedException")) {
+                return ResponseEntity.status(503).body("Circuit Breaker ACTIVADO: No se permitió procesar el pedido de " + pedido.getProducto());
+            } else {
+                return ResponseEntity.status(500).body("Error al enviar " + pedido.getProducto() + ": " + error);
+            }
+        }
     }
+
+
 }

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventario</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2em;
+      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    table {
+      border-collapse: collapse;
+      width: 50%;
+      margin: 1em auto 0 auto;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #aaa;
+      text-align: left;
+    }
+    th {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h1>📦 Inventario de Productos</h1>
+  <table id="tabla">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+      </tr>
+    </thead>
+    <tbody id="inventario-body">
+      <!-- Se llena con JS -->
+    </tbody>
+  </table>
+
+  <script>
+    fetch("/inventario")
+      .then(response => response.json())
+      .then(data => {
+        const tbody = document.getElementById("inventario-body");
+        Object.entries(data).forEach(([producto, cantidad]) => {
+          const fila = `<tr><td>${producto}</td><td>${cantidad}</td></tr>`;
+          tbody.innerHTML += fila;
+        });
+      })
+      .catch(error => {
+        document.body.innerHTML = "<p style='color: red;'>Error cargando el inventario 😓</p>";
+        console.error("Error:", error);
+      });
+  </script>
+</body>
+</html>

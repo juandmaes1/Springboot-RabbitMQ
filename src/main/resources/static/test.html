@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Enviar Pedido</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+      padding: 2em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+
+    form {
+      background-color: white;
+      padding: 1.5em;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+
+    label {
+      display: block;
+      margin-top: 1em;
+      font-weight: bold;
+    }
+
+    select, input[type="number"] {
+      width: 100%;
+      padding: 0.5em;
+      margin-top: 0.3em;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      margin-top: 1.5em;
+      width: 100%;
+      padding: 0.7em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      font-size: 1em;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #resultado {
+      margin-top: 1em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>📝 Realizar Pedido</h1>
+  <form id="pedidoForm">
+    <label for="producto">Producto:</label>
+    <select id="producto" name="producto">
+      <option value="Laptop">Laptop</option>
+      <option value="Smartphone">Smartphone</option>
+      <option value="Tablet">Tablet</option>
+      <option value="Monitor">Monitor</option>
+      <option value="Teclado">Teclado</option>
+      <option value="Mouse">Mouse</option>
+      <option value="Auriculares">Auriculares</option>
+    </select>
+
+    <label for="cantidad">Cantidad:</label>
+    <input type="number" id="cantidad" name="cantidad" min="1" max="10" required>
+
+    <button type="submit">Enviar Pedido</button>
+    <div id="resultado"></div>
+  </form>
+
+  <script>
+    const form = document.getElementById("pedidoForm");
+    const resultado = document.getElementById("resultado");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        producto: form.producto.value,
+        cantidad: parseInt(form.cantidad.value)
+      };
+
+      resultado.innerText = "⏳ Enviando pedido...";
+
+      const response = await fetch("/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const mensaje = await response.text();
+      resultado.innerText = response.ok ? `✅ ${mensaje}` : `❌ ${mensaje}`;
+    });
+  </script>
+</body>
+</html>
