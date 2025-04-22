@@ -115,7 +115,7 @@ Se puede acceder a las interfaces (UI's) en:
 
 ## Diagrama de Arquitectura
 
-![Arquitectura RabbitMQ Microservicios](architecture_rabbitmq.jpg)
+![Arquitectura RabbitMQ Microservicios](architecturarabbitmq.png)
 
 ---
 
